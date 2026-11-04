@@ -604,17 +604,31 @@ class TestHeaders:
         h2.add("x-bar", "humbug")
 
         assert h1 == h2
+        # Distinct headers must not compare equal
+        assert h1 != self.storage_class([("X-Foo", "different")])
+        assert not (h1 == self.storage_class([("X-Foo", "different")]))
+        # Non-Headers comparison must return NotImplemented
+        assert h1.__eq__("not-headers") is NotImplemented
+        assert h1.__eq__(42) is NotImplemented
 
     def test_or(self) -> None:
         a = ds.Headers({"x": 1})
         b = a | {"y": 2}
         assert isinstance(b, ds.Headers)
         assert "x" in b and "y" in b
+        # Non-mapping operand must return NotImplemented and raise TypeError
+        assert a.__or__(42) is NotImplemented
+        with pytest.raises(TypeError):
+            _ = a | 42
 
     def test_ior(self) -> None:
         a = ds.Headers({"x": 1})
         a |= {"y": 2}
         assert "x" in a and "y" in a
+        # Non-iterable/mapping operand must return NotImplemented and raise TypeError
+        assert a.__ior__(42) is NotImplemented
+        with pytest.raises(TypeError):
+            a |= 42
 
 
 class TestEnvironHeaders:

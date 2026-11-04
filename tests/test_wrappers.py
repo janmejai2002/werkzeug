@@ -220,6 +220,11 @@ def test_response_access_control():
         "X-A",
         "X-B",
     }
+    assert response.access_control_allow_credentials is True
+    resp_false = wrappers.Response(
+        headers={"Access-Control-Allow-Credentials": "false"}
+    )
+    assert resp_false.access_control_allow_credentials is False
 
 
 def test_base_response():
